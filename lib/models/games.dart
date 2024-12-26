@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -45,10 +46,30 @@ class Games {
   }
 }
 
-Future<List<Games>> loadGames() async {
-  final url = Uri.parse('https://www.freetogame.com/api/games');
+String freegameurl = 'https://free-to-play-games-database.p.rapidapi.com';
+String? freegamesKey = dotenv.env['FREEGAMES_KEY'];
 
-  final response = await http.get(url);
+Future<List<Games>> loadGames() async {
+  final url = Uri.parse('$freegameurl/api/games');
+
+  final response = await http.get(url, headers: {
+    'x-rapidapi-key': freegamesKey!,
+  });
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonResult = jsonDecode(response.body);
+    return jsonResult.map((item) => Games.fromJson(item)).toList();
+  } else {
+    throw Exception('failed to load game data');
+  }
+}
+
+Future<List<Games>> loadPopularGames() async {
+  final url = Uri.parse('$freegameurl/api/games?sort-by=popularity');
+
+  final response = await http.get(url, headers: {
+    'x-rapidapi-key': freegamesKey!,
+  });
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonResult = jsonDecode(response.body);
@@ -61,15 +82,20 @@ Future<List<Games>> loadGames() async {
 }
 
 Future<List<Games>> loadNewestGames() async {
-  final url = Uri.parse('https://www.freetogame.com/api/games?sort-by=release-date');
+  final url =
+      Uri.parse('$freegameurl/api/games?sort-by=release-date');
 
-  final response = await http.get(url);
+  final response = await http.get(url, headers: {
+    'x-rapidapi-key': freegamesKey!,
+  });
 
   if (response.statusCode == 200) {
     final List<dynamic> jsonResult = jsonDecode(response.body);
     return jsonResult
-      .map((item) => Games.fromJson(item))
-      .toList().take(6).toList();
+        .map((item) => Games.fromJson(item))
+        .toList()
+        .take(6)
+        .toList();
   } else {
     throw Exception('failed to load game data');
   }

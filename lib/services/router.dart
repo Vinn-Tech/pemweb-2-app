@@ -1,5 +1,6 @@
-import 'package:infinite_games/pages/main/details/details.dart';
+import 'package:infinite_games/pages/main/details/game_details.dart';
 import 'package:infinite_games/pages/main/explore/explore.dart';
+import 'package:infinite_games/pages/main/profile/about/about.dart';
 import 'package:infinite_games/pages/main/profile/edit_password/edit_password.dart';
 import 'package:infinite_games/pages/main/profile/verify_email/verify_email.dart';
 import 'package:flutter/material.dart';
@@ -74,14 +75,21 @@ class _ShellNavigationWrapperState extends State<_ShellNavigationWrapper> {
     return Scaffold(
       appBar: AppBar(
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset('assets/logo_main.png', height: 25,),
-            const SizedBox(width: 8,),
-            Image.asset('assets/logo_text.png', height: 25,),
-          ]
-        ),
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/logo_main.png',
+                height: 25,
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Image.asset(
+                'assets/logo_text.png',
+                height: 25,
+              ),
+            ]),
         centerTitle: true,
       ),
       body: widget.child,
@@ -174,13 +182,23 @@ class AppRouter {
       },
     ),
     GoRoute(
-      path: '/destination',
+      path: '/game-detail',
       pageBuilder: (context, state) {
-        final id = int.parse(state.uri.queryParameters['id']!);
+        final gameId = int.parse(state.uri.queryParameters['id']!);
         return CustomTransitionPage(
           key: state.pageKey,
-          child: DestinationPage(id: id),
-          transitionsBuilder: _slideTransitionVertical,
+          child: GameDetailsPage(id: gameId),
+          transitionsBuilder: _slideTransitionHorizontal,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/about',
+      pageBuilder: (context, state) {
+        return CustomTransitionPage(
+          key: state.pageKey,
+          child: const AboutPage(),
+          transitionsBuilder: _slideTransitionHorizontal,
         );
       },
     ),
